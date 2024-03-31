@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import fpdf
 import plotly.express as px
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.model_selection import train_test_split
@@ -8,6 +9,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from streamlit_extras.stoggle import stoggle
 from streamlit_extras.let_it_rain import rain 
+from fpdf import FPDF
+
 
 
 # Set page config
@@ -29,7 +32,7 @@ sidebar_style = """
 st.markdown(sidebar_style, unsafe_allow_html=True)
 
 # Load and preprocess the dataset
-df = pd.read_csv("https://raw.githubusercontent.com/gopiashokan/dataset/main/diabetes_prediction_dataset.csv")
+df = pd.read_csv("/workspaces/Diabetes-Prediction-Capstone/Dataset/diabetes_prediction_dataset.csv")
 enc = OrdinalEncoder()
 df[["smoking_history"]] = enc.fit_transform(df[["smoking_history"]])
 df[["gender"]] = enc.fit_transform(df[["gender"]])
@@ -50,6 +53,52 @@ gender_dict = {'Male': 0, 'Female': 1, 'Other': 2}
 hypertension_dict = {'No': 0, 'Yes': 1}
 heart_disease_dict = {'No': 0, 'Yes': 1}
 smoking_history_dict = {'Never': 0, 'Current': 1, 'Former': 2, 'Ever': 3, 'Not Current': 4, 'No Info': 5}
+
+# Function to create and return the PDF report
+def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c_level, blood_glucose_level, prediction):
+    pdf = FPDF()
+    pdf.add_page()
+
+    # Calculate the effective page width (epw)
+    epw = pdf.w - 2*pdf.l_margin
+    
+    # Set the title and author
+    pdf.set_title("Diabetes Prediction Report")
+    pdf.set_author("Diabetes Prediction App By Sanal Pillai")
+
+    # Add the logo
+    logo_path = '/workspaces/Diabetes-Prediction-Capstone/Assets/medical-report-logo.png'
+    pdf.image(logo_path, x=10, y=8, w=33)
+
+    # Add some space after the logo
+    pdf.ln(40)
+
+    # Add the title
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(epw, 10, 'Diabetes Prediction Report', 0, 1, 'C')
+
+    # Add the subtitle
+    pdf.set_font('Arial', 'I', 12)
+    pdf.cell(epw, 10, 'Your Health in Numbers', 0, 1, 'C')
+
+    # Add a line break
+    pdf.ln(10)
+
+    # Add the content
+    pdf.set_font('Arial', '', 12)
+    pdf.cell(epw/2, 10, f'Gender: {gender}', 0, 0)
+    pdf.cell(epw/2, 10, f'Age: {age}', 0, 1)
+    pdf.cell(epw/2, 10, f'Hypertension: {hypertension}', 0, 0)
+    pdf.cell(epw/2, 10, f'Heart Disease: {heart_disease}', 0, 1)
+    pdf.cell(epw/2, 10, f'Smoking History: {smoking_history}', 0, 0)
+    pdf.cell(epw/2, 10, f'BMI: {bmi}', 0, 1)
+    pdf.cell(epw/2, 10, f'HbA1c Level: {hba1c_level}', 0, 0)
+    pdf.cell(epw/2, 10, f'Blood Glucose Level: {blood_glucose_level}', 0, 1)
+    pdf.cell(epw, 10, f'Prediction: {"No diabetes" if prediction[0] == 0 else "Diabetes"}', 0, 1)
+
+    # Output the PDF
+    return pdf.output(dest='S').encode('latin1')
+
 
 # Sidebar for patient input fields
 with st.sidebar:
@@ -97,9 +146,9 @@ with info_col:
 
 # Define the path to your images
 image_paths = {
-    'Male': 'https://github.com/sanalpillai/Diabetes-Prediction-Capstone/blob/main/Assets/Male.png',
-    'Female': 'https://github.com/sanalpillai/Diabetes-Prediction-Capstone/blob/main/Assets/Female.png',
-    'Other': 'https://github.com/sanalpillai/Diabetes-Prediction-Capstone/blob/main/Assets/Others.png'
+    'Male': '/workspaces/Diabetes-Prediction-Capstone/Assets/Male.png',
+    'Female': '/workspaces/Diabetes-Prediction-Capstone/Assets/Female.png',
+    'Other': '/workspaces/Diabetes-Prediction-Capstone/Assets/Others.png'
 }
 
 # Radar chart visualization
@@ -121,13 +170,13 @@ st.plotly_chart(fig)
 
 # Prediction result display
 if submit:
-    st.write("## Patient Results")
+    st.write("## Patient Report")
     # Display patient results and profile photo side by side
     col1, col2 = st.columns(2)
     
     with col1:
         # Display the patient's profile photo
-        st.image(image_paths[gender], width=150, caption=f"Patient Profile: {gender}")
+        st.image(image_paths[gender], width=300)
     
     with col2:
         # Display patient information with ideal ranges or values for each factor
@@ -163,14 +212,39 @@ if submit:
             falling_speed=20,  # speed of raining 
             animation_length="0.5",  # for how much time the animation will happen 
         ) 
+    
+    # Create the PDF
+    pdf_content = create_pdf_report(
+        gender=gender,
+        age=age,
+        hypertension=hypertension,
+        heart_disease=heart_disease,
+        smoking_history=smoking_history,
+        bmi=bmi,
+        hba1c_level=hba1c_level,
+        blood_glucose_level=blood_glucose_level,
+        prediction=prediction
+    )
+
+    # Convert to a bytes object
+    pdf_bytes = bytes(pdf_content)
+
+    # Use Streamlit's download button to offer the PDF to the user
+    st.download_button(
+        label="Download PDF Report",
+        data=pdf_bytes,
+        file_name="diabetes_prediction_report.pdf",
+        mime="application/pdf",
+    )
+
     # Feature importance graph and summary inside a toggle
-with st.expander("View Feature Importance"):
-    feature_names = X_train.columns
-    feature_importances = model.feature_importances_
-    importance_df = pd.DataFrame({
-        'feature': feature_names,
-        'importance': feature_importances
-    }).sort_values('importance', ascending=False)
+    with st.expander("View Feature Importance"):
+        feature_names = X_train.columns
+        feature_importances = model.feature_importances_
+        importance_df = pd.DataFrame({
+            'feature': feature_names,
+            'importance': feature_importances
+        }).sort_values('importance', ascending=False)
     
     fig = px.bar(importance_df, x='feature', y='importance', title='Feature Importance')
     fig.update_layout(xaxis_title='Feature', yaxis_title='Importance')
@@ -181,4 +255,4 @@ with st.expander("View Feature Importance"):
     st.markdown(f"The most influential factors in predicting diabetes are **{top_features[0]}** and **{top_features[1]}**.")
 
     
-#Install plotly and streamlit-extras for code to run
+#Install plotly, fpdf and streamlit-extras for code to run
