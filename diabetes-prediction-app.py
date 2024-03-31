@@ -6,11 +6,14 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
+from streamlit_extras.stoggle import stoggle
+from streamlit_extras.let_it_rain import rain 
+
 
 # Set page config
 st.set_page_config(page_title='Diabetes Prediction App', page_icon=':dna:')
 
-# Custom CSS to inject into the Streamlit page with a background image and a color gradient
+# Custom CSS for the sidebar
 sidebar_style = """
 <style>
 [data-testid="stSidebar"] > div:first-child {
@@ -25,13 +28,11 @@ sidebar_style = """
 """
 st.markdown(sidebar_style, unsafe_allow_html=True)
 
-# Load your dataset
+# Load and preprocess the dataset
 df = pd.read_csv("https://raw.githubusercontent.com/gopiashokan/dataset/main/diabetes_prediction_dataset.csv")
-
-# Preprocess the data
 enc = OrdinalEncoder()
-df["smoking_history"] = enc.fit_transform(df[["smoking_history"]])
-df["gender"] = enc.fit_transform(df[["gender"]])
+df[["smoking_history"]] = enc.fit_transform(df[["smoking_history"]])
+df[["gender"]] = enc.fit_transform(df[["gender"]])
 
 # Define Independent and Dependent Variables
 X = df.drop("diabetes", axis=1)
@@ -43,6 +44,12 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_
 # Initialize and fit the RandomForestClassifier
 model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
+
+# Define dictionaries for encoding categorical variables
+gender_dict = {'Male': 0, 'Female': 1, 'Other': 2}
+hypertension_dict = {'No': 0, 'Yes': 1}
+heart_disease_dict = {'No': 0, 'Yes': 1}
+smoking_history_dict = {'Never': 0, 'Current': 1, 'Former': 2, 'Ever': 3, 'Not Current': 4, 'No Info': 5}
 
 # Sidebar for patient input fields
 with st.sidebar:
@@ -58,22 +65,52 @@ with st.sidebar:
     submit = st.button('Submit')
 
 # Main page description
-st.write("# Diabetes Prediction App")
-st.markdown("""
-This app predicts the likelihood of diabetes based on health parameters.
-Enter the required information in the sidebar and press 'Submit' to see the prediction.
-""")
+# Main layout with three columns: main content, spacer, and right-hand information block
+main_col, spacer, info_col = st.columns([3, 1, 1])
+
+with main_col:
+    # Your main app content here
+    st.write("# Diabetes Prediction App")
+    st.markdown("""
+    This app predicts the likelihood of diabetes based on health parameters.
+    Enter the required information in the sidebar and press 'Submit' to see the prediction.
+    """)
+    # Assume the prediction display and other main content goes here
+
+with info_col:
+    # Use the st.markdown to apply the custom styles to this container
+    st.markdown(
+        """
+        <div style="background-color: #800080; color: white; padding: 20px; border-radius: 10px; 
+                    width: 250px; height: auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="margin-top: 0;">About & Resources</h2>
+            <ul style="padding-left: 20px;"> <!-- Adjusted padding for bullets -->
+                <li style="margin-bottom: 10px;"><a href="https://www.cdc.gov/diabetes/prevent-type-2/index.html" target="_blank" style="color: #FFD700; text-decoration: underline;">Diabetes Prevention</a></li> <!-- Added text-decoration -->
+                <li><a href="https://www.who.int/news-room/fact-sheets/detail/healthy-diet" target="_blank" style="color: #FFD700; text-decoration: underline;">Healthy Living</a></li> <!-- Added text-decoration -->
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+
+# Define the path to your images
+image_paths = {
+    'Male': 'https://github.com/sanalpillai/Diabetes-Prediction-Capstone/blob/main/Assets/Male.png',
+    'Female': 'https://github.com/sanalpillai/Diabetes-Prediction-Capstone/blob/main/Assets/Female.png',
+    'Other': 'https://github.com/sanalpillai/Diabetes-Prediction-Capstone/blob/main/Assets/Others.png'
+}
 
 # Radar chart visualization
-# Placeholder patient data and healthy ranges
 df_metrics = pd.DataFrame({
-    'Metric': ['Age', 'BMI', 'HbA1c Level', 'Blood Glucose Level'],
-    'Value': [age, bmi, hba1c_level, blood_glucose_level],  # Use actual patient values
-    'Healthy_min': [0, 18.5, 4.0, 70],  # These are hypothetical healthy minimums
-    'Healthy_max': [120, 24.9, 5.7, 140]  # These are hypothetical healthy maximums
+    'Metric': ['Age', 'BMI', 'HbA1c', 'Blood Glucose'],
+    'Value': [age, bmi, hba1c_level, blood_glucose_level],  # User inputs
+    'Healthy_min': [0, 18.5, 4.0, 70],  # example healthy minimums
+    'Healthy_max': [120, 24.9, 5.7, 140]  # example healthy maximums
 })
 
-# Normalize the values
+# Normalize the values for the radar chart
 df_metrics['Normalized_Value'] = df_metrics.apply(
     lambda row: (row['Value'] - row['Healthy_min']) / (row['Healthy_max'] - row['Healthy_min']), axis=1)
 
@@ -84,27 +121,64 @@ st.plotly_chart(fig)
 
 # Prediction result display
 if submit:
-    # Perform prediction with the model and display results
-    # Note: Replace 'enc' with the actual OrdinalEncoder and input values with actual patient inputs
-    prediction = model.predict(np.array([[0, age, 0 if hypertension == 'No' else 1, 0 if heart_disease == 'No' else 1, 4.0, bmi, hba1c_level, blood_glucose_level]]))
     st.write("## Patient Results")
+    # Display patient results and profile photo side by side
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Display the patient's profile photo
+        st.image(image_paths[gender], width=150, caption=f"Patient Profile: {gender}")
+    
+    with col2:
+        # Display patient information with ideal ranges or values for each factor
+        st.markdown(f"""
+        - Gender: {gender} (Ideal: Not a direct risk factor)
+        - Age: {age} years old (Ideal range: <45 years old, as age can be a risk factor)
+        - Hypertension: {hypertension} (Ideal: No, as hypertension can increase risk)
+        - Heart Disease: {heart_disease} (Ideal: No, as heart disease can increase risk)
+        - Smoking History: {smoking_history} (Ideal: Never, as smoking can increase risk)
+        - BMI: {bmi} (Ideal range: 18.5-24.9, as higher values can increase risk)
+        - HbA1c Level: {hba1c_level} (Ideal range: <5.7%, as higher values can indicate prediabetes or diabetes)
+        - Blood Glucose Level: {blood_glucose_level} mg/dL (Ideal range: 70-140 mg/dL fasting, as higher values can indicate diabetes)
+        """)
+    
+    # Make prediction using the model
+    input_data = np.array([[gender_dict[gender], age, hypertension_dict[hypertension], heart_disease_dict[heart_disease],
+                            smoking_history_dict[smoking_history], bmi, hba1c_level, blood_glucose_level]])
+    prediction = model.predict(input_data)
     if prediction[0] == 0:
         st.success('The model predicts: No diabetes')
+        rain( 
+            emoji="🎉", 
+            font_size=30,  # the size of emoji 
+            falling_speed=20,  # speed of raining 
+            animation_length="0.5",  # for how much time the animation will happen 
+        ) 
     else:
         st.error('The model predicts: Diabetes')
-    
-    # Generate and display the feature importance graph
-    feature_names = X.columns
+        st.markdown('💔 Please consult with a doctor for advice and guidance.')
+        rain( 
+            emoji="💔", 
+            font_size=30,  # the size of emoji 
+            falling_speed=20,  # speed of raining 
+            animation_length="0.5",  # for how much time the animation will happen 
+        ) 
+    # Feature importance graph and summary inside a toggle
+with st.expander("View Feature Importance"):
+    feature_names = X_train.columns
     feature_importances = model.feature_importances_
-    importance_df = pd.DataFrame({'features': feature_names, 'importance': feature_importances})
-    importance_df = importance_df.sort_values('importance', ascending=False)
+    importance_df = pd.DataFrame({
+        'feature': feature_names,
+        'importance': feature_importances
+    }).sort_values('importance', ascending=False)
+    
+    fig = px.bar(importance_df, x='feature', y='importance', title='Feature Importance')
+    fig.update_layout(xaxis_title='Feature', yaxis_title='Importance')
+    st.plotly_chart(fig)
+    
+    # Summary of feature importances
+    top_features = importance_df['feature'].iloc[:2].tolist()
+    st.markdown(f"The most influential factors in predicting diabetes are **{top_features[0]}** and **{top_features[1]}**.")
 
-    fig = px.bar(importance_df, x='features', y='importance', title='Feature Importance')
-    fig.update_layout(xaxis_title='Feature', yaxis_title='Importance Score')
-    st.write(fig)
-
-    # Automatic summary of feature importances
-    st.write("### Summary")
-    st.write(f"The most important features in predicting diabetes are {importance_df.iloc[0, 0]} and {importance_df.iloc[1, 0]}, indicating they have the strongest influence on the model's predictions.")
-
-    #Install plotly to run radar plots
+    
+#Install plotly and streamlit-extras for code to run
