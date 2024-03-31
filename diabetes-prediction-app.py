@@ -57,7 +57,7 @@ smoking_history_dict = {'Never': 0, 'Current': 1, 'Former': 2, 'Ever': 3, 'Not C
 class PDF(FPDF):
     def header(self):
         # Logo
-        self.image('/workspaces/Diabetes-Prediction-Capstone/Assets/medical-report-logo.png', 10, 8, 33)
+        self.image('https://raw.githubusercontent.com/sanalpillai/Diabetes-Prediction/main/Assets/medical-report-logo.png', 10, 8, 33)
         self.set_font('Arial', 'B', 18)
         # Move to the right
         self.cell(80)
