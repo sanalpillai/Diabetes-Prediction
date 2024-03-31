@@ -54,49 +54,77 @@ hypertension_dict = {'No': 0, 'Yes': 1}
 heart_disease_dict = {'No': 0, 'Yes': 1}
 smoking_history_dict = {'Never': 0, 'Current': 1, 'Former': 2, 'Ever': 3, 'Not Current': 4, 'No Info': 5}
 
-# Function to create and return the PDF report
-def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c_level, blood_glucose_level, prediction):
-    pdf = FPDF()
-    pdf.add_page()
+class PDF(FPDF):
+    def header(self):
+        # Logo
+        self.image('/workspaces/Diabetes-Prediction-Capstone/Assets/medical-report-logo.png', 10, 8, 33)
+        self.set_font('Arial', 'B', 18)
+        # Move to the right
+        self.cell(80)
+        # Title
+        self.cell(30, 10, 'Diabetes Prediction Report', 0, 0, 'C')
+        # Line break
+        self.ln(20)
 
-    # Calculate the effective page width (epw)
-    epw = pdf.w - 2*pdf.l_margin
+    def chapter_title(self, num, label):
+        # Arial 12
+        self.set_font('Arial', '', 12)
+        # Background color
+        self.set_fill_color(200, 220, 255)
+        # Title
+        self.cell(0, 6, 'Chapter %d : %s' % (num, label), 0, 1, 'L', 1)
+        # Line break
+        self.ln(4)
+
+    def chapter_body(self, body):
+        # Read text file
+        # Times 12
+        self.set_font('Times', '', 12)
+        # Output justified text
+        self.multi_cell(0, 10, body)
+        # Line break
+        self.ln()
+        # Mention in italics
+        self.set_font('', 'I')
+        self.cell(0, 10, '(end of excerpt)')
+
+    def footer(self):
+        # Position at 1.5 cm from bottom
+        self.set_y(-15)
+        # Arial italic 8
+        self.set_font('Arial', 'I', 8)
+        # Page number
+        self.cell(0, 10, 'Page ' + str(self.page_no()), 0, 0, 'C')
     
-    # Set the title and author
-    pdf.set_title("Diabetes Prediction Report")
-    pdf.set_author("Diabetes Prediction App By Sanal Pillai")
+def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c_level, blood_glucose_level, prediction):
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_left_margin(10)
+    pdf.set_right_margin(10)
 
-    # Add the logo
-    logo_path = '/workspaces/Diabetes-Prediction-Capstone/Assets/medical-report-logo.png'
-    pdf.image(logo_path, x=10, y=8, w=33)
-
-    # Add some space after the logo
-    pdf.ln(40)
-
-    # Add the title
+    # Print the chapters
     pdf.set_font('Arial', 'B', 16)
-    pdf.cell(epw, 10, 'Diabetes Prediction Report', 0, 1, 'C')
-
-    # Add the subtitle
-    pdf.set_font('Arial', 'I', 12)
-    pdf.cell(epw, 10, 'Your Health in Numbers', 0, 1, 'C')
-
-    # Add a line break
-    pdf.ln(10)
-
-    # Add the content
+    pdf.cell(0, 10, 'Patient Information', 0, 1, 'C')
     pdf.set_font('Arial', '', 12)
-    pdf.cell(epw/2, 10, f'Gender: {gender}', 0, 0)
-    pdf.cell(epw/2, 10, f'Age: {age}', 0, 1)
-    pdf.cell(epw/2, 10, f'Hypertension: {hypertension}', 0, 0)
-    pdf.cell(epw/2, 10, f'Heart Disease: {heart_disease}', 0, 1)
-    pdf.cell(epw/2, 10, f'Smoking History: {smoking_history}', 0, 0)
-    pdf.cell(epw/2, 10, f'BMI: {bmi}', 0, 1)
-    pdf.cell(epw/2, 10, f'HbA1c Level: {hba1c_level}', 0, 0)
-    pdf.cell(epw/2, 10, f'Blood Glucose Level: {blood_glucose_level}', 0, 1)
-    pdf.cell(epw, 10, f'Prediction: {"No diabetes" if prediction[0] == 0 else "Diabetes"}', 0, 1)
+    
+    patient_info = f"""
+    Gender: {gender}
+    Age: {age}
+    Hypertension: {hypertension}
+    Heart Disease: {heart_disease}
+    Smoking History: {smoking_history}
+    BMI: {bmi}
+    HbA1c Level: {hba1c_level}
+    Blood Glucose Level: {blood_glucose_level}
+    """
+    pdf.multi_cell(0, 10, patient_info)
+    
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, 'Prediction Outcome', 0, 1, 'C')
+    pdf.set_font('Arial', '', 12)
+    outcome = 'No diabetes' if prediction[0] == 0 else 'Diabetes'
+    pdf.cell(0, 10, f"Prediction: {outcome}", 0, 1, 'C')
 
-    # Output the PDF
     return pdf.output(dest='S').encode('latin1')
 
 
