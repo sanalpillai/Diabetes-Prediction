@@ -32,7 +32,7 @@ sidebar_style = """
 st.markdown(sidebar_style, unsafe_allow_html=True)
 
 # Load and preprocess the dataset
-df = pd.read_csv("/workspaces/Diabetes-Prediction-Capstone/Dataset/diabetes_prediction_dataset.csv")
+df = pd.read_csv("https://raw.githubusercontent.com/sanalpillai/Diabetes-Prediction/main/Dataset/diabetes_prediction_dataset.csv")
 enc = OrdinalEncoder()
 df[["smoking_history"]] = enc.fit_transform(df[["smoking_history"]])
 df[["gender"]] = enc.fit_transform(df[["gender"]])
@@ -174,9 +174,9 @@ with info_col:
 
 # Define the path to your images
 image_paths = {
-    'Male': '/workspaces/Diabetes-Prediction-Capstone/Assets/Male.png',
-    'Female': '/workspaces/Diabetes-Prediction-Capstone/Assets/Female.png',
-    'Other': '/workspaces/Diabetes-Prediction-Capstone/Assets/Others.png'
+    'Male': 'https://raw.githubusercontent.com/sanalpillai/Diabetes-Prediction/main/Assets/Male.png',
+    'Female': 'https://raw.githubusercontent.com/sanalpillai/Diabetes-Prediction/main/Assets/Female.png',
+    'Other': 'https://raw.githubusercontent.com/sanalpillai/Diabetes-Prediction/main/Assets/Other.png'
 }
 
 # Radar chart visualization
