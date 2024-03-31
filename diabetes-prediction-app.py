@@ -29,7 +29,7 @@ sidebar_style = """
 st.markdown(sidebar_style, unsafe_allow_html=True)
 
 # Load and preprocess the dataset
-df = pd.read_csv("https://raw.githubusercontent.com/sanalpillai/Diabetes-Prediction-Capstone/main/Dataset/diabetes_prediction_dataset.csv?token=GHSAT0AAAAAACKT2DNC32NG3XF3AAI4AUEAZQJRRJA")
+df = pd.read_csv("https://raw.githubusercontent.com/gopiashokan/dataset/main/diabetes_prediction_dataset.csv")
 enc = OrdinalEncoder()
 df[["smoking_history"]] = enc.fit_transform(df[["smoking_history"]])
 df[["gender"]] = enc.fit_transform(df[["gender"]])
@@ -65,11 +65,35 @@ with st.sidebar:
     submit = st.button('Submit')
 
 # Main page description
-st.write("# Diabetes Prediction App")
-st.markdown("""
-This app predicts the likelihood of diabetes based on health parameters.
-Enter the required information in the sidebar and press 'Submit' to see the prediction.
-""")
+# Main layout with three columns: main content, spacer, and right-hand information block
+main_col, spacer, info_col = st.columns([3, 1, 1])
+
+with main_col:
+    # Your main app content here
+    st.write("# Diabetes Prediction App")
+    st.markdown("""
+    This app predicts the likelihood of diabetes based on health parameters.
+    Enter the required information in the sidebar and press 'Submit' to see the prediction.
+    """)
+    # Assume the prediction display and other main content goes here
+
+with info_col:
+    # Use the st.markdown to apply the custom styles to this container
+    st.markdown(
+        """
+        <div style="background-color: #800080; color: white; padding: 20px; border-radius: 10px; 
+                    width: 250px; height: auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="margin-top: 0;">About & Resources</h2>
+            <ul style="padding-left: 20px;"> <!-- Adjusted padding for bullets -->
+                <li style="margin-bottom: 10px;"><a href="https://www.cdc.gov/diabetes/prevent-type-2/index.html" target="_blank" style="color: #FFD700; text-decoration: underline;">Diabetes Prevention</a></li> <!-- Added text-decoration -->
+                <li><a href="https://www.who.int/news-room/fact-sheets/detail/healthy-diet" target="_blank" style="color: #FFD700; text-decoration: underline;">Healthy Living</a></li> <!-- Added text-decoration -->
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 
 # Define the path to your images
 image_paths = {
