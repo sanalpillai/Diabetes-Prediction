@@ -9,48 +9,50 @@ This project is a web-based application designed to predict the likelihood of di
 - Feature importance graph to highlight the most significant factors for diabetes prediction.
 - Information block with resources and feedback link.
 - Customized UI with gradient background and animation effects.
+- Downloadable PDF report generation with prediction results.
 
 ## How It Works
-Users enter their health details, including gender, age, hypertension status, heart disease status, smoking history, BMI, HbA1c level, and blood glucose level. Upon submission, the application processes the inputs through a pre-trained machine learning model to predict whether the user is likely to have diabetes. Results are accompanied by animations to enhance the user experience.
+Users enter their health details, including gender, age, hypertension status, heart disease status, smoking history, BMI, HbA1c level, and blood glucose level. Upon submission, the application processes the inputs through a pre-trained machine learning model to predict whether the user is likely to have diabetes. Results are accompanied by animations and a downloadable PDF report to enhance the user experience.
 
 ## Installation
-Instructions on setting up the project locally. Include steps for cloning the repository, installing dependencies, and running the Streamlit app.
+To set up the project locally, follow these steps:
 
 git clone https://github.com/yourusername/Diabetes-Prediction-Capstone.git
 cd Diabetes-Prediction-Capstone
 pip install -r requirements.txt
 streamlit run diabetes_prediction_app.py
 
-vbnet
+css
 Copy code
 
 ## Usage
 Provide a step-by-step guide on how to use the app, possibly with screenshots.
 
-![Sidebar Input](path-to-screenshot.png)
+![Sidebar Input](path-to-sidebar-screenshot.png)
 *User input via sidebar.*
 
-![Prediction Results](path-to-screenshot.png)
+![Prediction Results](path-to-prediction-screenshot.png)
 *Display of prediction results and profile photo.*
 
-![Feature Importance](path-to-screenshot.png)
+![Feature Importance](path-to-feature-importance-screenshot.png)
 *Feature importance graph visualized.*
 
-## Resources Section
-Discuss the 'About & Resources' section, which provides users with additional information and links to resources on diabetes prevention and healthy living. Mention how it aids in user education.
+![Download PDF Report](path-to-download-pdf-screenshot.png)
+*Button to download the prediction report as a PDF.*
 
-![About & Resources](path-to-screenshot.png)
+## Resources Section
+The 'About & Resources' section provides users with additional information and links to resources on diabetes prevention and healthy living. This aids in user education and empowerment.
+
+![About & Resources](path-to-about-resources-screenshot.png)
 *About & Resources block.*
 
 ## Feedback
-Encourage users to give feedback and contribute to the project by providing a contact email or a link to the issue tracker.
+We value your feedback and contributions to improve the app. Please feel free to contact us at your.email@example.com or report an issue on the [GitHub issues page](https://github.com/yourusername/Diabetes-Prediction-Capstone/issues).
 
 ## Acknowledgements
-Credit any contributors, data sources, or third-party resources/tools used.
+Credit to the contributors, data sources, or third-party resources/tools used in the development of this application.
 
 ## License
-State the license under which the project is released.
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-Remember to replace `path-to-screenshot.png` with the actual file paths of your screens
-
-App Link: https://diabetes-prediction-spillai.streamlit.app/
+For a live demonstration, visit the app at [Diabetes Prediction App](https://diabetes-prediction-capstone-run.streamlit.app/)
