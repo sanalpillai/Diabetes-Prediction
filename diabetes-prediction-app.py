@@ -55,16 +55,24 @@ heart_disease_dict = {'No': 0, 'Yes': 1}
 smoking_history_dict = {'Never': 0, 'Current': 1, 'Former': 2, 'Ever': 3, 'Not Current': 4, 'No Info': 5}
 
 class PDF(FPDF):
+    def __init__(self):  # Add this __init__ method if not present
+        super().__init__()
+        self.unifontsubset = True  # Ensure this attribute is set
+        
     def header(self):
+        # Ensure the right position at the start of each page
+        self.set_y(10)
         # Logo
         self.image('https://raw.githubusercontent.com/sanalpillai/Diabetes-Prediction/main/Assets/medical-report-logo.png', 10, 8, 33)
-        self.set_font('Arial', 'B', 18)
         # Move to the right
         self.cell(80)
+        # Set the position for the title
+        self.set_x(10)
+        self.set_font('Arial', 'B', 18)
         # Title
-        self.cell(30, 10, 'Diabetes Prediction Report', 0, 0, 'C')
-        # Line break
-        self.ln(20)
+        self.cell(0, 10, 'Diabetes Prediction Report', 0, 1, 'C')
+        # Ensure a sufficient gap after the header
+        self.ln(10)
 
     def chapter_title(self, num, label):
         # Arial 12
@@ -96,15 +104,22 @@ class PDF(FPDF):
         # Page number
         self.cell(0, 10, 'Page ' + str(self.page_no()), 0, 0, 'C')
     
-def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c_level, blood_glucose_level, prediction, health_recommendations):
+    def check_page_break(self, threshold):
+        if self.get_y() + threshold > self.page_break_trigger:
+            self.add_page()
+    
+def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c_level, blood_glucose_level, prediction, health_recommendations, meal_plans):
     pdf = PDF()
     pdf.add_page()
-    pdf.set_left_margin(10)
-    pdf.set_right_margin(10)
+    # Before adding new content, check the y position
+    y_before = pdf.get_y()
+    if y_before < 40:  # If less than your desired top margin, set the position lower
+        pdf.set_y(40)
+    
 
     # Print the chapters
     pdf.set_font('Arial', 'B', 16)
-    pdf.cell(0, 10, 'Patient Information', 0, 1, 'C')
+    pdf.cell(0,7, 'Patient Information', 0, 1, 'C')
     pdf.set_font('Arial', '', 12)
     
     patient_info = f"""
@@ -117,21 +132,62 @@ def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history,
     HbA1c Level: {hba1c_level}
     Blood Glucose Level: {blood_glucose_level}
     """
-    pdf.multi_cell(0, 10, patient_info)
+    pdf.multi_cell(0, 7, patient_info)
     
+    # Line break with a full-width line
+    pdf.ln(3)  # Move below the content
+    pdf.set_draw_color(0, 0, 0)  # Set the line color to black
+    pdf.line(10, pdf.get_y(), pdf.w - 10, pdf.get_y())  # Draw the line 
+    pdf.ln(3)  # Space after line
+
     pdf.set_font('Arial', 'B', 16)
     pdf.cell(0, 10, 'Prediction Outcome', 0, 1, 'C')
     pdf.set_font('Arial', '', 12)
     outcome = 'No diabetes' if prediction[0] == 0 else 'Diabetes'
-    pdf.cell(0, 10, f"Prediction: {outcome}", 0, 1, 'C')
+    pdf.cell(0, 7, f"Prediction: {outcome}", 0, 1, 'C')
+
+    # Line break with a full-width line
+    pdf.ln(5)  # Move below the content
+    pdf.set_draw_color(0, 0, 0)  # Set the line color to black
+    pdf.line(10, pdf.get_y(), pdf.w - 10, pdf.get_y())  # Draw the line 
+    pdf.ln(5)  # Space after line
 
     # New section for Health Recommendations
     pdf.set_font('Arial', 'B', 16)
     pdf.cell(0, 10, 'Health Recommendations', 0, 1, 'C')
     pdf.set_font('Arial', '', 12)
     for recommendation in health_recommendations:  # Use the passed parameter
-        pdf.multi_cell(0, 10, recommendation)
+        pdf.multi_cell(0, 7, recommendation)
         pdf.ln(2)  # Add a small space between recommendations for readability
+
+    # Include meal plans in the PDF
+    if meal_plans:
+        pdf.add_page()
+        pdf.set_font('Arial', 'B', 16)
+        pdf.cell(0, 7, 'Meal Planning and Recipes', 0, 1, 'C')
+        pdf.ln(10)  # Add a space after the section title
+        pdf.set_font('Arial', '', 12)
+        for plan in meal_plans:
+            # Check for page break
+            pdf.check_page_break(10)  # Adjust the value according to your needs
+            # Bold recipe title
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(0, 7, plan['title'], 0, 1, 'L')
+            pdf.ln(2)
+
+            # Regular text for description
+            pdf.set_font('Arial', '', 12)
+            pdf.multi_cell(0, 7, plan['description'])
+            pdf.ln(2)
+
+            # List each recipe
+            for recipe in plan['recipes']:
+                pdf.set_font('Arial', 'B', 12)  # Make recipe names bold
+                pdf.cell(0, 7, f"- {recipe}", 0, 1)
+            # Line break with a full-width line
+            pdf.ln(2)  # Move below the content
+            pdf.set_draw_color(0, 0, 0)  # Set the line color to black
+            pdf.line(5, pdf.get_y(), pdf.w - 5, pdf.get_y())  # Draw the line 
 
     return pdf.output(dest='S').encode('latin1')
 
@@ -270,6 +326,52 @@ if submit:
 
         return recommendations
 
+    def generate_meal_plans(bmi, blood_glucose_level):
+        meal_plans = []
+
+        # For users needing to manage weight
+        if bmi >= 25:
+            meal_plans.append({
+                'title': 'Balanced Weight Management Meal Plan',
+                'description': 'A carefully curated meal plan focusing on high-fiber, low-fat foods to support weight loss while ensuring you stay full and satisfied. Key ingredients include lean proteins, whole grains, and plenty of fruits and vegetables to provide balanced nutrition.',
+                'recipes': [
+                    'Breakfast: Avocado and egg toast on whole-grain bread',
+                    'Lunch: Quinoa salad with chickpeas, cucumber, tomatoes, and feta cheese',
+                    'Dinner: Grilled salmon with a side of roasted Brussels sprouts and sweet potato',
+                    'Snack: Greek yogurt with a handful of walnuts and honey'
+                ]
+            })
+
+        # For users with higher blood glucose levels
+        if blood_glucose_level >= 140:
+            meal_plans.append({
+                'title': 'Low-Glycemic Index Meal Plan',
+                'description': 'Designed to minimize spikes in blood sugar levels, this meal plan includes foods that have a low glycemic index. Expect meals rich in proteins and healthy fats, along with complex carbohydrates that are digested slowly, helping to maintain steady blood sugar levels throughout the day.',
+                'recipes': [
+                    'Breakfast: Steel-cut oatmeal topped with cinnamon and fresh berries',
+                    'Lunch: Lentil and vegetable stew with a side of mixed greens salad',
+                    'Dinner: Chicken stir-fry with broccoli, bell peppers, and cashews served over brown rice',
+                    'Snack: Sliced apples with almond butter'
+                ]
+            })
+
+        # General healthy eating plan for diabetes prevention
+        meal_plans.append({
+            'title': 'Diabetes Prevention Meal Plan',
+            'description': 'This general health-focused meal plan is designed for overall well-being and diabetes prevention. It includes a variety of nutrient-dense, antioxidant-rich foods to support healthy blood sugar levels and reduce inflammation.',
+            'recipes': [
+                'Breakfast: Greek yogurt with mixed berries and a sprinkle of chia seeds',
+                'Lunch: Turkey and avocado wrap with whole-grain tortilla and mixed vegetable sticks',
+                'Dinner: Baked cod with a lemon-herb crust, served with quinoa and steamed green beans',
+                'Snack: A handful of mixed nuts and a piece of fresh fruit'
+            ]
+        })
+
+        return meal_plans
+
+# Ensure the generate_meal_plans function is correctly called within the main logic of your application
+
+
     # Assuming 'prediction', 'bmi', 'hba1c_level', and 'blood_glucose_level' are defined from your model and user inputs
     # Call the function to get personalized recommendations
     recommendations = generate_health_recommendations(prediction, bmi, hba1c_level, blood_glucose_level)
@@ -278,6 +380,18 @@ if submit:
     st.write("## Personalized Health Recommendations")
     for recommendation in recommendations:
         st.write("- ", recommendation)
+
+    # Assuming 'bmi' and 'blood_glucose_level' are defined
+    meal_plans = generate_meal_plans(bmi, blood_glucose_level)
+
+    if meal_plans:
+        st.write("## Meal Planning and Recipes")
+        for plan in meal_plans:
+                st.write(f"### {plan['title']}")
+                st.write(plan['description'])
+                for recipe in plan['recipes']:
+                    st.write(f"- {recipe}")
+
         
     # Create the PDF
     pdf_content = create_pdf_report(
@@ -290,7 +404,8 @@ if submit:
         hba1c_level=hba1c_level,
         blood_glucose_level=blood_glucose_level,
         prediction=prediction,
-        health_recommendations=recommendations
+        health_recommendations=recommendations,
+        meal_plans=meal_plans
     )
 
     # Convert to a bytes object
