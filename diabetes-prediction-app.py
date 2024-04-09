@@ -194,16 +194,20 @@ def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history,
 
 # Sidebar for patient input fields
 with st.sidebar:
-    st.header('Patient Information')
-    gender = st.selectbox('Gender', ['Male', 'Female', 'Other'])
-    age = st.slider('Age', 0, 120, 30)
-    hypertension = st.selectbox('Hypertension', ['No', 'Yes'])
-    heart_disease = st.selectbox('Heart Disease', ['No', 'Yes'])
-    smoking_history = st.selectbox('Smoking History', ['Never', 'Current', 'Former', 'Ever', 'Not Current', 'No Info'])
-    bmi = st.slider('BMI', 10.0, 50.0, 22.0)
-    hba1c_level = st.slider('HbA1c Level', 0.0, 15.0, 5.7)
-    blood_glucose_level = st.slider('Blood Glucose Level', 0, 300, 100)
-    submit = st.button('Submit')
+    with st.form(key='patient_input_form'):
+        st.header('Patient Information')
+        gender = st.selectbox('Gender', ['Male', 'Female', 'Other'])
+        age = st.slider('Age', 0, 120, 30)
+        hypertension = st.selectbox('Hypertension', ['No', 'Yes'])
+        heart_disease = st.selectbox('Heart Disease', ['No', 'Yes'])
+        smoking_history = st.selectbox('Smoking History', ['Never', 'Current', 'Former', 'Ever', 'Not Current', 'No Info'])
+        bmi = st.slider('BMI', 10.0, 50.0, 22.0)
+        hba1c_level = st.slider('HbA1c Level', 0.0, 15.0, 5.7)
+        blood_glucose_level = st.slider('Blood Glucose Level', 0, 300, 100)
+        
+        # Use the form_submit_button to trigger the computation
+        submit = st.form_submit_button(label='Submit')
+
 
 # Main page description
 # Main layout with three columns: main content, spacer, and right-hand information block
