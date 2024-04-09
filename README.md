@@ -68,15 +68,19 @@ The Diabetes Prediction App stands out as a comprehensive tool that blends medic
 
 
 ## Installation
-To set up the project locally, follow these steps:
+To set up the Diabetes Prediction App locally on your machine, please follow the steps below:
 
-git clone https://github.com/yourusername/Diabetes-Prediction-Capstone.git
-cd Diabetes-Prediction-Capstone
-pip install -r requirements.txt
-streamlit run diabetes_prediction_app.py
+1. Clone the repository:
+```bashgit clone https://github.com/yourusername/Diabetes-Prediction-Capstone.git```
 
-css
-Copy code
+2. Change into the project directory:
+```bashcd Diabetes-Prediction-Capstone```
+
+3. Install the required dependencies:
+```bashpip install -r requirements.txt```
+
+4. Run the app using Streamlit:
+```bashstreamlit run diabetes_prediction_app.py```
 
 ## Usage
 Provide a step-by-step guide on how to use the app, possibly with screenshots.
