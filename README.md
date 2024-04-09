@@ -85,26 +85,32 @@ To set up the Diabetes Prediction App locally on your machine, please follow the
 ## Usage
 Provide a step-by-step guide on how to use the app, possibly with screenshots.
 
-![Sidebar Input](path-to-sidebar-screenshot.png)
-*User input via sidebar.*
+![Initial Homepage](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/Screenshots/Initial%20Homepage.png)
+*Initial homepage after running the app*
 
-![Prediction Results](path-to-prediction-screenshot.png)
+![Sidebar Input](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/Screenshots/Sidebar.png)
+<br>*User input via sidebar.*
+
+![Prediction Results](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/Screenshots/Personalized%20Health%20Recommendations.png)
 *Display of prediction results and profile photo.*
 
-![Feature Importance](path-to-feature-importance-screenshot.png)
+![Meal Plannig and Recipes](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/Screenshots/Meal%20Planning%20and%20Recipes.png)
+*Displays meal planning and recipes according to the patient's health*
+
+![Feature Importance](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/Screenshots/Feature%20Importance.png)
 *Feature importance graph visualized.*
 
-![Download PDF Report](path-to-download-pdf-screenshot.png)
+![Download PDF Report](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/Screenshots/Download%20Report.png)
 *Button to download the prediction report as a PDF.*
+
+![PDF Report](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/Screenshots/PDF%20Report.png)
+<br>*Pdf reported generated after pressing the button*
 
 ## Resources Section
 The 'About & Resources' section provides users with additional information and links to resources on diabetes prevention and healthy living. This aids in user education and empowerment.
 
-![About & Resources](path-to-about-resources-screenshot.png)
-*About & Resources block.*
-
 ## Feedback
-We value your feedback and contributions to improve the app. Please feel free to contact us at your.email@example.com or report an issue on the [GitHub issues page](https://github.com/yourusername/Diabetes-Prediction-Capstone/issues).
+We value your feedback and contributions to improve the app. Please feel free to report an issue on the [GitHub issues page](https://github.com/sanalpillai/Diabetes-Prediction/issues).
 
 ## Acknowledgements
 Credit to the contributors, data sources, or third-party resources/tools used in the development of this application.
