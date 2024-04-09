@@ -118,4 +118,4 @@ Credit to the contributors, data sources, or third-party resources/tools used in
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-For a live demonstration, visit the app at [Diabetes Prediction App](https://diabetes-prediction-capstone-run.streamlit.app/)
+For a live demonstration, visit the app at [Diabetes Prediction App](https://diabetes-prediction-capstone-spillai.streamlit.app/)
