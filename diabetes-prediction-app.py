@@ -96,7 +96,7 @@ class PDF(FPDF):
         # Page number
         self.cell(0, 10, 'Page ' + str(self.page_no()), 0, 0, 'C')
     
-def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c_level, blood_glucose_level, prediction):
+def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history, bmi, hba1c_level, blood_glucose_level, prediction, health_recommendations):
     pdf = PDF()
     pdf.add_page()
     pdf.set_left_margin(10)
@@ -124,6 +124,14 @@ def create_pdf_report(gender, age, hypertension, heart_disease, smoking_history,
     pdf.set_font('Arial', '', 12)
     outcome = 'No diabetes' if prediction[0] == 0 else 'Diabetes'
     pdf.cell(0, 10, f"Prediction: {outcome}", 0, 1, 'C')
+
+    # New section for Health Recommendations
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, 'Health Recommendations', 0, 1, 'C')
+    pdf.set_font('Arial', '', 12)
+    for recommendation in health_recommendations:  # Use the passed parameter
+        pdf.multi_cell(0, 10, recommendation)
+        pdf.ln(2)  # Add a small space between recommendations for readability
 
     return pdf.output(dest='S').encode('latin1')
 
@@ -240,7 +248,37 @@ if submit:
             falling_speed=20,  # speed of raining 
             animation_length="0.5",  # for how much time the animation will happen 
         ) 
-    
+    # Function to generate personalized health recommendations
+    def generate_health_recommendations(prediction, bmi, hba1c_level, blood_glucose_level):
+        recommendations = []
+
+        # General advice for all users
+        recommendations.append("Regular physical activity can help prevent diabetes and manage blood sugar levels.")
+        recommendations.append("A balanced diet rich in fruits, vegetables, and whole grains is beneficial for overall health.")
+
+        # Custom recommendations based on prediction and health metrics
+        if prediction[0] == 1:  # If the model predicts diabetes
+            recommendations.append("Consider consulting with a healthcare professional for further assessment and guidance.")
+            if bmi >= 25:
+                recommendations.append("Aiming for a healthy weight can reduce your risk of diabetes. Consider speaking with a dietitian for personalized advice.")
+            if hba1c_level >= 5.7:
+                recommendations.append("An HbA1c level of 5.7% or higher indicates prediabetes. Discuss with your doctor about monitoring your blood sugar levels more closely.")
+            if blood_glucose_level >= 140:
+                recommendations.append("High fasting blood glucose levels can be a sign of diabetes. It's important to consult with your doctor for a comprehensive evaluation.")
+        else:
+            recommendations.append("Maintaining a healthy lifestyle can help keep your risk of diabetes low. Regular check-ups with your doctor are also recommended.")
+
+        return recommendations
+
+    # Assuming 'prediction', 'bmi', 'hba1c_level', and 'blood_glucose_level' are defined from your model and user inputs
+    # Call the function to get personalized recommendations
+    recommendations = generate_health_recommendations(prediction, bmi, hba1c_level, blood_glucose_level)
+
+    # Display the recommendations
+    st.write("## Personalized Health Recommendations")
+    for recommendation in recommendations:
+        st.write("- ", recommendation)
+        
     # Create the PDF
     pdf_content = create_pdf_report(
         gender=gender,
@@ -251,7 +289,8 @@ if submit:
         bmi=bmi,
         hba1c_level=hba1c_level,
         blood_glucose_level=blood_glucose_level,
-        prediction=prediction
+        prediction=prediction,
+        health_recommendations=recommendations
     )
 
     # Convert to a bytes object
