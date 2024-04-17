@@ -30,7 +30,7 @@ This Diabetes Prediction App is an interactive tool designed to evaluate the lik
   - **For Diabetes Prevention:** A balanced meal plan with nutrient-dense foods is provided to all users.
 
 ### Reporting
-- **Downloadable PDF Report:** Users can download a personalized report containing their health data, prediction results, and specific recommendations for diet and health.
+- **Downloadable PDF Report:** Users can download a personalized report containing their health data, prediction results, and specific recommendations for diet and health. Here is a sample of the [report](https://github.com/sanalpillai/Diabetes-Prediction/blob/main/diabetes_prediction_report.pdf)  generated.
 - **Customizable Report Content:** The PDF report includes details like the user's prediction outcome, health recommendations, and meal plans, formatted for clarity and ease of reading.
 
 ### Data Visualization
@@ -126,3 +126,4 @@ Credit to the contributors, data sources, or third-party resources/tools used in
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 For a live demonstration, visit the app at [Diabetes Prediction App](https://diabetes-prediction-capstone-spillai.streamlit.app/)
+
