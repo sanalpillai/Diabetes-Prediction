@@ -3,6 +3,10 @@
 ## Overview
 This project is a web-based application designed to predict the likelihood of diabetes using various health parameters. It uses machine learning algorithms to provide a prediction based on user input. The app is built with Streamlit and uses a RandomForestClassifier for prediction.
 
+For a live demonstration, visit the app at [**Diabetes Prediction App**](https://diabetes-prediction-capstone-spillai.streamlit.app/)
+
+For a demo video, check this [**Youtube video**](https://youtu.be/7Mtpg7Ravzc)
+
 ## Features
 - Interactive sidebar for user input collection.
 - Radar chart visualization for comparing health metrics against healthy ranges.
@@ -125,5 +129,4 @@ Credit to the contributors, data sources, or third-party resources/tools used in
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
-For a live demonstration, visit the app at [Diabetes Prediction App](https://diabetes-prediction-capstone-spillai.streamlit.app/)
 
