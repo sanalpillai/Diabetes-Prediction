@@ -7,6 +7,8 @@ For a live demonstration, visit the app at [**Diabetes Prediction App**](https:/
 
 For a demo video, check this [**Youtube video**](https://youtu.be/7Mtpg7Ravzc)
 
+Listen to this [**AI Song**](https://youtu.be/of2PEbG8jcc) made for this app here.
+
 ## Features
 - Interactive sidebar for user input collection.
 - Radar chart visualization for comparing health metrics against healthy ranges.
